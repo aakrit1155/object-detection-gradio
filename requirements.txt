@@ -2,3 +2,5 @@ torch
 torchvision
 ultralytics
 gradio
+pillow
+numpy
