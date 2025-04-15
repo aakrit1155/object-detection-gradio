@@ -5,27 +5,24 @@ from collections import Counter
 from PIL import Image, ImageDraw
 import os
 import shutil
+
 import numpy as np
 
 MODEL_NAME = 'yolov8n.pt'  # Specify the model name
 
 CUSTOM_PATH_TO_MODEL = os.path.join(os.path.dirname(__file__), 'models', MODEL_NAME)
-DEFAULT_DOWNLOAD_PATH = os.path.join(os.path.dirname(__file__), 'models',MODEL_NAME) # Set to the default download path
+DEFAULT_DOWNLOAD_PATH = os.path.join(os.path.dirname(__file__), MODEL_NAME) # Set to the default download path
 
 # Load the YOLOv8 model from a custom path if it exists, otherwise load the default model
-if CUSTOM_PATH_TO_MODEL != DEFAULT_DOWNLOAD_PATH:
-    if os.path.exists(CUSTOM_PATH_TO_MODEL):
-        print(f"Loading model from: {CUSTOM_PATH_TO_MODEL}")
-        model = YOLO(CUSTOM_PATH_TO_MODEL)
-    else:
-        print(f"Model not found at: {CUSTOM_PATH_TO_MODEL}. Loading default (will download if needed).")
-        model = YOLO(MODEL_NAME)
-        
-        import shutil
-        shutil.move(DEFAULT_DOWNLOAD_PATH, CUSTOM_PATH_TO_MODEL)
+if os.path.exists(CUSTOM_PATH_TO_MODEL):
+    print(f"Loading model from: {CUSTOM_PATH_TO_MODEL}")
+    model = YOLO(CUSTOM_PATH_TO_MODEL)
 else:
-    print(f"Loading default model from: {DEFAULT_DOWNLOAD_PATH}")
+    print(f"Model not found at: {CUSTOM_PATH_TO_MODEL}. Loading default (will download if needed).")
     model = YOLO(MODEL_NAME)
+    
+    import shutil
+    shutil.move(DEFAULT_DOWNLOAD_PATH, CUSTOM_PATH_TO_MODEL)
 
 
 
