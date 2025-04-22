@@ -1,29 +1,33 @@
-import torch
-from ultralytics import YOLO
-import gradio as gr
-from collections import Counter
-from PIL import Image, ImageDraw
 import os
 import shutil
+from collections import Counter
 
+import gradio as gr
 import numpy as np
+import torch
+from PIL import Image, ImageDraw
+from ultralytics import YOLO
 
-MODEL_NAME = 'yolov8n.pt'  # Specify the model name
+MODEL_NAME = "yolov8n.pt"  # Specify the model name
 
-CUSTOM_PATH_TO_MODEL = os.path.join(os.path.dirname(__file__), 'models', MODEL_NAME)
-DEFAULT_DOWNLOAD_PATH = os.path.join(os.path.dirname(__file__), MODEL_NAME) # Set to the default download path
+CUSTOM_PATH_TO_MODEL = os.path.join(os.path.dirname(__file__), "models", MODEL_NAME)
+DEFAULT_DOWNLOAD_PATH = os.path.join(
+    os.path.dirname(__file__), MODEL_NAME
+)  # Set to the default download path
 
 # Load the YOLOv8 model from a custom path if it exists, otherwise load the default model
 if os.path.exists(CUSTOM_PATH_TO_MODEL):
     print(f"Loading model from: {CUSTOM_PATH_TO_MODEL}")
     model = YOLO(CUSTOM_PATH_TO_MODEL)
 else:
-    print(f"Model not found at: {CUSTOM_PATH_TO_MODEL}. Loading default (will download if needed).")
+    print(
+        f"Model not found at: {CUSTOM_PATH_TO_MODEL}. Loading default (will download if needed)."
+    )
     model = YOLO(MODEL_NAME)
-    
-    import shutil
-    shutil.move(DEFAULT_DOWNLOAD_PATH, CUSTOM_PATH_TO_MODEL)
 
+    import shutil
+
+    shutil.move(DEFAULT_DOWNLOAD_PATH, CUSTOM_PATH_TO_MODEL)
 
 
 def detect_objects(image):
@@ -66,6 +70,7 @@ def draw_bounding_boxes(image, results):
 
     return image_with_boxes
 
+
 def format_output(results):
     """
     Formats the object counts from the YOLO results into a neat string.
@@ -102,13 +107,14 @@ def predict(image):
     formatted_output = format_output(results)
     return image_with_boxes, formatted_output
 
+
 # Create the Gradio interface
 iface = gr.Interface(
     fn=predict,
     inputs=gr.Image(label="Upload an Image"),
     outputs=[
         gr.Image(label="Image with Detected Objects"),
-        gr.Textbox(label="Detected Objects and Counts")
+        gr.Textbox(label="Detected Objects and Counts"),
     ],
     title="Object Detection with YOLOv8",
     description="Upload an image and I'll show you the detected objects with bounding boxes and a list of objects with their counts!",
