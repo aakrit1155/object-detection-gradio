@@ -7,6 +7,10 @@ import numpy as np
 from PIL import Image, ImageDraw
 from ultralytics import YOLO
 
+# load the css file
+with open(os.path.join(os.path.dirname(__file__), "style.css"), "r") as f:
+    custom_css = f.read()
+
 MODEL_NAME = "yolov8m.pt"  # Specify the model name
 
 CUSTOM_PATH_TO_MODEL = os.path.join(os.path.dirname(__file__), "models", MODEL_NAME)
@@ -64,8 +68,12 @@ def draw_bounding_boxes(image, results):
                 label = f"{model.names[cls]} {conf:.2f}"
 
                 x1, y1, x2, y2 = map(int, xyxy)
-                draw.rectangle([(x1, y1), (x2, y2)], outline="red", width=2)
-                draw.text((x1, y1 - 10), label, fill="red")
+                draw.rectangle([(x1, y1), (x2, y2)], outline="green", width=2)
+                draw.text(
+                    (x1, y1 - 10),
+                    label,
+                    fill="green",
+                )
 
     return image_with_boxes
 
@@ -107,17 +115,26 @@ def predict(image):
     return image_with_boxes, formatted_output
 
 
-# Create the Gradio interface
-iface = gr.Interface(
-    fn=predict,
-    inputs=gr.Image(label="Upload an Image"),
-    outputs=[
-        gr.Image(label="Image with Detected Objects"),
-        gr.Textbox(label="Detected Objects and Counts"),
-    ],
-    title="Object Detection with YOLOv8",
-    description="Upload an image and I'll show you the detected objects with bounding boxes and a list of objects with their counts!",
-)
+with gr.Blocks(css=custom_css, theme=gr.themes.Glass()) as iface:
+    gr.Markdown("## Object Detection with YOLOv8")
+    gr.Markdown(
+        "Upload an image and I'll show you the detected objects with bounding boxes and a list of objects with their counts!"
+    )
+    image_input = gr.Image(label="Upload an Image", elem_classes="custom-input-image")
+    submit_btn = gr.Button("Detect Objects")
+    image_output = gr.Image(
+        label="Image with Detected Objects", elem_classes="custom-output-image"
+    )
+    text_output = gr.Textbox(
+        label="Detected Objects and Counts", elem_classes="custom-output-textbox"
+    )
+    submit_btn.click(
+        fn=predict, inputs=image_input, outputs=[image_output, text_output]
+    )
+    gr.HTML(
+        '<a href="https://aakrit-resume.streamlit.app" class="custom-link" target="_blank">Check out my Portfolio- Aakrit Sharma Lamsal</a>'
+    )
+
 
 # Launch the Gradio app
 iface.launch()
