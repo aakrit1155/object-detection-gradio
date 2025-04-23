@@ -4,11 +4,10 @@ from collections import Counter
 
 import gradio as gr
 import numpy as np
-import torch
 from PIL import Image, ImageDraw
 from ultralytics import YOLO
 
-MODEL_NAME = "yolov8n.pt"  # Specify the model name
+MODEL_NAME = "yolov8m.pt"  # Specify the model name
 
 CUSTOM_PATH_TO_MODEL = os.path.join(os.path.dirname(__file__), "models", MODEL_NAME)
 DEFAULT_DOWNLOAD_PATH = os.path.join(
